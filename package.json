@@ -1,0 +1,23 @@
+{
+  "name": "userscripts",
+  "private": true,
+  "description": "Userscripts published to Greasy Fork.",
+  "license": "GPL-2.0-or-later",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DanKaplanSES/userscripts.git"
+  },
+  "scripts": {
+    "lint": "eslint . && prettier --check . && node scripts/check-userscripts.js",
+    "format": "prettier --write . && eslint --fix .",
+    "greasyfork": "node scripts/greasyfork.js"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.15.0",
+    "eslint-plugin-userscripts": "^0.5.6",
+    "globals": "^17.14.0",
+    "prettier": "^3.10.1"
+  }
+}

@@ -17,6 +17,12 @@ Install a userscript manager such as Tampermonkey in your browser first. Then
 install a script from its Greasy Fork page, so your userscript manager picks up
 new versions automatically.
 
+## Development
+
+Run `npm install` once, then `npm run lint` to check formatting, lint errors,
+and the repo rules in [AGENTS.md](AGENTS.md). `npm run format` fixes
+formatting. [GREASYFORK.md](GREASYFORK.md) covers publishing to Greasy Fork.
+
 ## License
 
 Licensed under the GNU General Public License v2.0 or later. See

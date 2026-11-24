@@ -1,2 +1,5 @@
 # Scratch files (page captures, pasted snippets, notes) stay local.
 scratch*.*
+
+# Dependencies installed by npm.
+node_modules/
