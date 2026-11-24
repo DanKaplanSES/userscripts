@@ -34,10 +34,9 @@ Up keeps its normal behavior when:
 ## Messages that can't be edited
 
 LinkedIn only lets you edit a message for an hour after sending it. To find out
-whether it still can, the script opens the message's "..." menu and looks for
-Edit, so the menu may flicker for a moment. If Edit isn't there, the menu
-closes, a short note appears above the message box, and the cursor returns to
-the box.
+whether it still can, the script opens the message's "..." menu out of sight
+and looks for Edit. If Edit isn't there, the menu closes, a short note appears
+above the message box, and the cursor returns to the box.
 
 The notes you may see:
 

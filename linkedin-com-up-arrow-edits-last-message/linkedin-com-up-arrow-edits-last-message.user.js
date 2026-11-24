@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         linkedin.com: Up Arrow Edits Last Message
 // @namespace    DanKaplanSES
-// @version      0.7.4
+// @version      0.7.5
 // @description  In a LinkedIn chat, pressing Up in an empty composer/message box opens your last sent message for editing.
 // @match        *://www.linkedin.com/*
 // @license      GPL-2.0-or-later
@@ -94,6 +94,10 @@
   // A closed menu keeps its old items in the DOM, so only look inside an open one.
   const OPEN_MENU_ITEM =
     ".artdeco-dropdown__content--is-open .artdeco-dropdown__item";
+  const MENU = ".artdeco-dropdown__content";
+  const MENU_OPEN_CLASS = "artdeco-dropdown__content--is-open";
+  // Marks the message whose menu the Up key opens, so the menu stays invisible.
+  const HIDE_MENU_ATTR = "data-li-up-edit-hide-menu";
 
   // ---------------------------------------------------------------------------
   // Helpers
@@ -176,6 +180,40 @@
     document.body.appendChild(note);
     setTimeout(() => (note.style.opacity = "0"), 1800);
     setTimeout(() => note.remove(), 2200);
+  }
+
+  // The menu the Up key opens is only a way to reach Edit, so it is hidden for that
+  // press. Without this it fades in and out for about 300ms. The rule goes in the
+  // root holding the message, since document styles don't reach into the chat
+  // overlay's shadow root. It uses opacity, not visibility: LinkedIn never renders
+  // the items of a menu hidden with visibility, so Edit would never appear.
+  const styledRoots = new WeakSet();
+  function addHideMenuStyle(el) {
+    const root = el.getRootNode();
+    if (styledRoots.has(root)) return;
+    styledRoots.add(root);
+    const style = document.createElement("style");
+    style.textContent = `[${HIDE_MENU_ATTR}] ${MENU} { opacity: 0 !important; pointer-events: none !important; }`;
+    (root === document ? document.head : root).appendChild(style);
+  }
+
+  // Shows the message's menu again once it has closed and its fade-out has
+  // finished. Unhiding during the fade would show the tail end of it.
+  async function unhideMenuWhenClosed(message) {
+    // The menu opens a moment after the click. Don't mistake that for closed.
+    await waitFor(() =>
+      message.querySelector(MENU)?.classList.contains(MENU_OPEN_CLASS),
+    );
+    await waitFor(() => {
+      const menu = message.querySelector(MENU);
+      return (
+        !menu ||
+        (!menu.classList.contains(MENU_OPEN_CLASS) &&
+          menu.getAnimations().length === 0)
+      );
+    });
+    message.removeAttribute(HIDE_MENU_ATTR);
+    debug("menu unhidden");
   }
 
   // Focuses el and puts the caret after its last character.
@@ -359,10 +397,14 @@
     // Edit. So open the menu and look. If it is already open, a click would close
     // it, so only click a closed trigger.
     const trigger = last.querySelector(OPTIONS_TRIGGER);
-    if (trigger.getAttribute("aria-expanded") !== "true") trigger.click();
+    if (trigger.getAttribute("aria-expanded") !== "true") {
+      addHideMenuStyle(last);
+      last.setAttribute(HIDE_MENU_ATTR, "");
+      trigger.click();
+      unhideMenuWhenClosed(last);
+    }
 
-    // Decide as soon as the menu's items render, so a menu without Edit only
-    // flickers.
+    // Decide as soon as the menu's items render.
     const items = await waitFor(() => {
       const found = [...last.querySelectorAll(OPEN_MENU_ITEM)];
       return found.length ? found : null;
