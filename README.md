@@ -9,7 +9,7 @@ browsers and userscript managers may work, but haven't been tried.
 
 ## Scripts
 
-None published yet.
+- [linkedin.com: Up Arrow Edits Last Message](linkedin-com-up-arrow-edits-last-message/): Press Up in an empty LinkedIn message box to edit your last sent message.
 
 ## Installing
 
