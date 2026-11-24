@@ -6,7 +6,8 @@ that conversation, the way Slack and Discord work.
 ## Install
 
 Install a userscript manager such as Tampermonkey, then install this script
-from its Greasy Fork page. The link is added once the script is published.
+from its
+[Greasy Fork page](https://greasyfork.org/en/scripts/606999-linkedin-com-up-arrow-edits-last-message).
 
 ## Usage
 
