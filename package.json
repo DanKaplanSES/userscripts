@@ -11,6 +11,7 @@
   "scripts": {
     "lint": "eslint . && prettier --check . && node scripts/check-userscripts.js",
     "format": "prettier --write . && eslint --fix .",
+    "add": "node scripts/add.js",
     "greasyfork": "node scripts/greasyfork.js"
   },
   "devDependencies": {

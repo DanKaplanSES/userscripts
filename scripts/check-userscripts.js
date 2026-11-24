@@ -6,44 +6,12 @@
 import { execFileSync } from "node:child_process";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
+import { folderName, metaProblems, parseMeta } from "./meta.js";
 
 const root = path.resolve(import.meta.dirname, "..");
 
-const requiredValues = {
-  namespace: "DanKaplanSES",
-  license: "GPL-2.0-or-later",
-  supportURL: "https://github.com/DanKaplanSES/userscripts/issues",
-  homepageURL: "https://SleepEasySoftware.com",
-};
-const requiredKeys = ["name", "version", "description", "grant"];
-const bannedKeys = ["updateURL", "downloadURL", "installURL"];
-
 const errors = [];
 const report = (file, message) => errors.push(`${file}: ${message}`);
-
-// "linkedin.com: Up Arrow Edits Last Message" becomes
-// "linkedin-com-up-arrow-edits-last-message".
-export function folderName(name) {
-  return name
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-}
-
-function parseMeta(source) {
-  const block = source.match(
-    /\/\/ ==UserScript==\s*\n([\s\S]*?)\/\/ ==\/UserScript==/,
-  );
-  if (!block) return null;
-  const meta = {};
-  for (const line of block[1].split("\n")) {
-    const entry = line.match(/^\/\/\s*@(\S+)(?:\s+(.*?))?\s*$/);
-    if (!entry) continue;
-    const [, key, value = ""] = entry;
-    (meta[key] ??= []).push(value);
-  }
-  return meta;
-}
 
 function git(...args) {
   try {
@@ -77,34 +45,8 @@ for (const file of findUserscripts(root)) {
     continue;
   }
 
-  for (const key of requiredKeys) {
-    if (!meta[key]?.some(Boolean)) report(rel, `missing @${key}`);
-  }
-  for (const [key, value] of Object.entries(requiredValues)) {
-    if (meta[key]?.[0] !== value) report(rel, `@${key} must be "${value}"`);
-  }
-  if (!meta.match && !meta.include) report(rel, "needs @match or @include");
-  for (const key of bannedKeys) {
-    if (meta[key]) report(rel, `remove @${key}, Greasy Fork strips it`);
-  }
-
-  for (const url of meta.require ?? []) {
-    const hashed = /#(md5|sha1|sha256|sha384|sha512)[=-]/.test(url);
-    if (/@latest\b/.test(url)) {
-      report(rel, `pin a version instead of @latest: ${url}`);
-    }
-    if (
-      !hashed &&
-      /^https:\/\/(raw\.githubusercontent\.com|github\.com)\//.test(url)
-    ) {
-      report(rel, `Greasy Fork rejects @require from GitHub: ${url}`);
-    }
-  }
-
+  for (const problem of metaProblems(meta)) report(rel, problem);
   const version = meta.version?.[0];
-  if (version && !/^\d+\.\d+\.\d+$/.test(version)) {
-    report(rel, `@version "${version}" isn't MAJOR.MINOR.PATCH`);
-  }
 
   const name = meta.name?.[0];
   if (name) {

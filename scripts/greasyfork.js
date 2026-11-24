@@ -6,7 +6,7 @@
 //     the secret from GREASYFORK_WEBHOOK_SECRET. Does nothing if the hook
 //     already exists. Needs `gh` with admin access to the repo.
 //
-//   npm run greasyfork -- new <folder>
+//   npm run greasyfork -- import <folder>
 //     Prints the URLs and steps for importing a new script into Greasy Fork.
 //
 // See GREASYFORK.md for the full process.
@@ -62,7 +62,7 @@ function hook(payloadUrl) {
   );
 }
 
-function newScript(folder) {
+function importScript(folder) {
   folder = folder?.replace(/\/+$/, "");
   const script = `${folder}/${folder}.user.js`;
   if (!folder || !existsSync(path.join(root, script))) {
@@ -98,5 +98,5 @@ function newScript(folder) {
 
 const [command, arg] = process.argv.slice(2);
 if (command === "hook") hook(arg);
-else if (command === "new") newScript(arg);
-else fail("Usage: npm run greasyfork -- hook <payload-url> | new <folder>");
+else if (command === "import") importScript(arg);
+else fail("Usage: npm run greasyfork -- hook <payload-url> | import <folder>");

@@ -36,8 +36,8 @@ switches to Webhook.
 The webhook only reacts to modified files. The push that adds a new script
 does nothing on Greasy Fork, so the first version has to be imported.
 
-1. Push the new script to `main`.
-2. Run `npm run greasyfork -- new <folder>`. It prints these URLs for you:
+1. Add the script with `npm run add -- <path>`, then push it to `main`.
+2. Run `npm run greasyfork -- import <folder>`. It prints these URLs for you:
    - Script: `https://raw.githubusercontent.com/DanKaplanSES/userscripts/main/<folder>/<folder>.user.js`
    - README: `https://raw.githubusercontent.com/DanKaplanSES/userscripts/main/<folder>/README.md`
 3. Open https://greasyfork.org/en/import, paste the script URL, and keep the

@@ -21,7 +21,8 @@ new versions automatically.
 
 Run `npm install` once, then `npm run lint` to check formatting, lint errors,
 and the repo rules in [AGENTS.md](AGENTS.md). `npm run format` fixes
-formatting. [GREASYFORK.md](GREASYFORK.md) covers publishing to Greasy Fork.
+formatting. `npm run add -- <path>` checks a tested script and copies
+it into the repo layout. [GREASYFORK.md](GREASYFORK.md) covers publishing to Greasy Fork.
 
 ## License
 
